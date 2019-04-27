@@ -14,6 +14,7 @@
 (define MT (empty-scene SCENE-SIZE SCENE-SIZE))
 (define MAX SCENE-SIZE)
 (define GEM-SIZE 14)
+(define FRUIT-SIZE 14)
 (define ANGLE 90)
 (define TOMATO "Tomato")
 (define AQUAMARINE "Aquamarine")
@@ -22,12 +23,12 @@
 (define GOLD "gold")
 
 ; graphical constants
-(define (GEM c) (rhombus GEM-SIZE ANGLE "solid" c))
-;(GEM TOMATO)
-;(GEM AQUAMARINE)
-;(GEM VIOLET)
-;(GEM CORNFLOWERBLUE)
-;(GEM GOLD)
+(define (create-gem g) (rhombus GEM-SIZE ANGLE "solid" (gem-colour g)))
+(define (create-fruit f) (circle FRUIT-SIZE "solid" (fruit-colour f))) 
+(define SCENE
+  (scene+line
+   (scene+line MT 0 (* SCENE-SIZE 0.75) SCENE-SIZE (* SCENE-SIZE 0.75) 'black)
+   0 (* SCENE-SIZE 0.25) SCENE-SIZE (* SCENE-SIZE 0.25) 'black))
 
 ; structures
 (define-struct currency [jewel input output quarter system]) 
@@ -52,11 +53,11 @@
 ; a gem is a unit of currency. Inputs are exchanged into
 ; gems that when combined are exchanged again into outputs
 
-(define GEM0 (make-gem TOMATO (make-posn SIZE SIZE) 0 ""))
-(define GEM1 (make-gem AQUAMARINE (make-posn (* 2 SIZE) (* 2 SIZE)) 0 ""))
-(define GEM2 (make-gem VIOLET (make-posn (* 3 SIZE) (* 3 SIZE)) 0 ""))
-(define GEM3 (make-gem CORNFLOWERBLUE (make-posn (* 4 SIZE) (* 4 SIZE)) 0 ""))
-(define GEM4 (make-gem GOLD (make-posn (* 5 SIZE) (* 5 SIZE)) 0 ""))
+(define RUBY (make-gem TOMATO (make-posn SIZE SIZE) 0 ""))
+(define TURQUOISE (make-gem AQUAMARINE (make-posn (* 2 SIZE) (* 2 SIZE)) 0 ""))
+(define QUARTZ (make-gem VIOLET (make-posn (* 3 SIZE) (* 3 SIZE)) 0 ""))
+(define SAPHIRE (make-gem CORNFLOWERBLUE (make-posn (* 4 SIZE) (* 4 SIZE)) 0 ""))
+(define OPAL (make-gem GOLD (make-posn (* 5 SIZE) (* 5 SIZE)) 0 ""))
 
 ; a Nutrient is a structure
 ; (make-nutrient String String Number String)
@@ -160,21 +161,3 @@
 
 ; usage
 ;(cursim 1)
-
-; for render
-;(place-image (GEM (gem-colour GEM0))
-;               (posn-x (gem-position GEM0))
-;               (posn-y (gem-position GEM0))
-;               (place-image (GEM (gem-colour GEM1))
-;               (posn-x (gem-position GEM1))
-;               (posn-y (gem-position GEM1))
-;               (place-image (GEM (gem-colour GEM2))
-;               (posn-x (gem-position GEM2))
-;               (posn-y (gem-position GEM2))
-;               (place-image (GEM (gem-colour GEM3))
-;               (posn-x (gem-position GEM3))
-;               (posn-y (gem-position GEM3))
-;               (place-image (GEM (gem-colour GEM4))
-;               (posn-x (gem-position GEM4))
-;               (posn-y (gem-position GEM4))
-;               MT)))))
