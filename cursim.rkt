@@ -31,10 +31,10 @@
 
 ; structures
 (define-struct currency [jewel input output quarter system]) 
-(define-struct gem [colour position sound])
-(define-struct nutrient [type position sound])
-(define-struct climate [type positon sound])
-(define-struct fruit [name position sound])
+(define-struct gem [colour position delta sound])
+(define-struct nutrient [type symbol delta sound])
+(define-struct climate [type symbol delta sound])
+(define-struct fruit [type colour position delta sound])
 (define-struct season (quarter delta sound))
 (define-struct economy (supply demand gdp inflation))
 
@@ -52,34 +52,54 @@
 ; a gem is a unit of currency. Inputs are exchanged into
 ; gems that when combined are exchanged again into outputs
 
-(define GEM0 (make-gem TOMATO (make-posn SIZE SIZE) ""))
-(define GEM1 (make-gem AQUAMARINE (make-posn (* 2 SIZE) (* 2 SIZE)) ""))
-(define GEM2 (make-gem VIOLET (make-posn (* 3 SIZE) (* 3 SIZE)) ""))
-(define GEM3 (make-gem CORNFLOWERBLUE (make-posn (* 4 SIZE) (* 4 SIZE)) ""))
-(define GEM4 (make-gem GOLD (make-posn (* 5 SIZE) (* 5 SIZE)) ""))
+(define GEM0 (make-gem TOMATO (make-posn SIZE SIZE) 0 ""))
+(define GEM1 (make-gem AQUAMARINE (make-posn (* 2 SIZE) (* 2 SIZE)) 0 ""))
+(define GEM2 (make-gem VIOLET (make-posn (* 3 SIZE) (* 3 SIZE)) 0 ""))
+(define GEM3 (make-gem CORNFLOWERBLUE (make-posn (* 4 SIZE) (* 4 SIZE)) 0 ""))
+(define GEM4 (make-gem GOLD (make-posn (* 5 SIZE) (* 5 SIZE)) 0 ""))
 
 ; a Nutrient is a structure
-; (make-nutrient String Posn String)
-; a nutrient represents an external input into the tree
+; (make-nutrient String String Number String)
+; a nutrient represents an input; Nitrogen, Calcium, Copper etc.
 
-
+(define N2 (make-nutrient "Nitrogen" "N2" 0 ""))
+(define CA (make-nutrient "Calcium" "Ca" 0 ""))
+(define CU (make-nutrient "Copper" "Cu" 0 ""))
 
 ; a Climate is a structure
-; (make-climate String Posn String)
-; a climate is an external input into the tree
+; (make-climate String String Number String)
+; a climate is an input into; Oxygen, UV, precipitation, temperature
+
+(define O2 (make-nutrient "Oxygen" "O2" 0 ""))
+(define WAVE (make-nutrient "Light" "EMS" 0 ""))
+(define WATER (make-nutrient "Precipitation" "H2O" 0 ""))
+(define TEMP (make-nutrient "Temperature" "C" 0 ""))
 
 ; a Fruit is a structure
-; (make-fruit String Posn String)
-; a fruit is an internal output of the tree
+; (make-fruit String String Posn Number String)
+; a fruit is an output
+
+(define BLOOD (make-fruit "Blood orange" TOMATO (make-posn 0 0) 0 ""))
+(define LIME (make-fruit "Lime" AQUAMARINE (make-posn 0 0) 0 ""))
+(define PEACH (make-fruit "Peach" VIOLET (make-posn 0 0) 0 ""))
+(define BERRY (make-fruit "Blueberry" CORNFLOWERBLUE (make-posn 0 0) 0 ""))
+(define MANGO (make-fruit "Mango" GOLD (make-posn 0 0) 0 ""))
 
 ; a Season is a structure
 ; (make-season String Number String)
 ; a season is the current quarter and represents the dynamic force
 ; acting upon the inputs and otputs of the system
 
+(define SPRING (make-season "Spring" 0 ""))
+(define SUMMER (make-season "Summer" 0 ""))
+(define AUTUMN (make-season "Autumn" 0 ""))
+(define WINTER (make-season "Winter" 0 ""))
+
 ; an Economy is a structure
 ; (make-economoy Number Number Number Number)
 ; an economy represents the empiric value of the system donated in gems
+
+(define ECONOMY (make-economy 0 0 0 0))
 
 ; a Jewel is one of:
 ; - '()
@@ -142,19 +162,19 @@
 ;(cursim 1)
 
 ; for render
-(place-image (GEM (gem-colour GEM0))
-               (posn-x (gem-position GEM0))
-               (posn-y (gem-position GEM0))
-               (place-image (GEM (gem-colour GEM1))
-               (posn-x (gem-position GEM1))
-               (posn-y (gem-position GEM1))
-               (place-image (GEM (gem-colour GEM2))
-               (posn-x (gem-position GEM2))
-               (posn-y (gem-position GEM2))
-               (place-image (GEM (gem-colour GEM3))
-               (posn-x (gem-position GEM3))
-               (posn-y (gem-position GEM3))
-               (place-image (GEM (gem-colour GEM4))
-               (posn-x (gem-position GEM4))
-               (posn-y (gem-position GEM4))
-               MT)))))
+;(place-image (GEM (gem-colour GEM0))
+;               (posn-x (gem-position GEM0))
+;               (posn-y (gem-position GEM0))
+;               (place-image (GEM (gem-colour GEM1))
+;               (posn-x (gem-position GEM1))
+;               (posn-y (gem-position GEM1))
+;               (place-image (GEM (gem-colour GEM2))
+;               (posn-x (gem-position GEM2))
+;               (posn-y (gem-position GEM2))
+;               (place-image (GEM (gem-colour GEM3))
+;               (posn-x (gem-position GEM3))
+;               (posn-y (gem-position GEM3))
+;               (place-image (GEM (gem-colour GEM4))
+;               (posn-x (gem-position GEM4))
+;               (posn-y (gem-position GEM4))
+;               MT)))))
