@@ -19,19 +19,22 @@
 (define (GEM c) (rhombus SIZE ANGLE "solid" c))
 
 ; structures
-(define-struct currency [jewel input output season])
+(define-struct currency [jewel input output quarter system]) 
 (define-struct gem [name position colour sound])
 (define-srtuct nutrient [type position sound])
 (define-struct climate [type positon sound])
 (define-struct fruit [name position sound])
 (define-struct season (quarter delta sound))
+(define-struct economy (supply demand gdp inflation))
 
 ; Interpretation
 
 ; a Currency is a structure
-; (make-currency Jewel Input Output Season)
-; currency is the state of the program. Each field represents an object
-; in the dynamic system
+; (make-currency Jewel Input Output Season Economy)
+; currency is the state of the program. It is represented by a tree.
+; Each field represents an interaction with the system. 
+
+(define CURRENCY0 (make-currency '() '() '() '() '()))
 
 ; a Gem is a structure
 ; (make-gem String Posn String String)
@@ -54,6 +57,53 @@
 ; (make-season String Number String)
 ; a season is the current quarter and represents the dynamic force
 ; acting upon the inputs and otputs of the system
+
+; an Economy is a structure
+; (make-economoy Number Number Number Number)
+; an economy represents the empiric value of the system donated in gems
+
+; a Jewel is one of:
+; - '()
+; (cons gem jewel)
+; a Jewel is a list of gems
+
+; an Input is one of:
+; - '()
+; - (cons nutrient input)
+; - (cons climate input)
+; - (cons season input)
+; an input is a list of external inputs that create currency (gems)
+; by the tree
+
+; an output is one of:
+; - '()
+; - (cons fruit output)
+; - (cons climate output)
+; - (cons nutrient output)
+; an oupput is a list of internal exports that go back into the system and
+; exhaust currency (gems)
+
+; a Quarter is one of:
+; - '()
+; - (cons season quarter)
+; a quarter is a either Winter, Spring, Summer, and Autumn.
+; each season affects the inputs and outputs of the system by a value, delta
+
+; a system is one of:
+; - '()
+; - (cons supply (cons demand (cons gdp (cons inflation system))))
+; a system is a list of numbers representing its economic value 
+
+; functions
+
+; Currency -> Currency
+; consumes a currency c and updates it each tick
+(define (tock c) c)
+
+(check-expect (tock CURRENCY0) CURRENCY0)
+
+(check-expect (tock (make-currency
+                     (list (make-gem
 
 ; Currency -> Currency
 ; launches the program from some initial state c
