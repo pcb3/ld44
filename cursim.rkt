@@ -14,7 +14,7 @@
 (define MT (empty-scene SCENE-SIZE SCENE-SIZE))
 (define MAX SCENE-SIZE)
 (define GEM-SIZE 14)
-(define FRUIT-SIZE 14)
+(define FRUIT-SIZE 10)
 (define ANGLE 90)
 (define TOMATO "Tomato")
 (define AQUAMARINE "Aquamarine")
@@ -40,13 +40,6 @@
 (define-struct economy (supply demand gdp inflation))
 
 ; Interpretation
-
-; a Currency is a structure
-; (make-currency Jewel Input Output Season Economy)
-; currency is the state of the program. It is represented by a tree.
-; Each field represents an interaction with the system. 
-
-(define CURRENCY0 (make-currency '() '() '() '() '()))
 
 ; a Gem is a structure
 ; (make-gem String Posn String)
@@ -133,7 +126,7 @@
 
 (define OUTPUT0 '())
 
-(define OUPUT1 (list BLOOD LIME PEACH BERRY MANGO))
+(define OUTPUT1 (list BLOOD LIME PEACH BERRY MANGO))
 
 ; a Quarter is one of:
 ; - '()
@@ -141,9 +134,9 @@
 ; a quarter is a either Winter, Spring, Summer, and Autumn.
 ; each season affects the inputs and outputs of the system by a value, delta
 
-(define SEASON0 '())
+(define QUARTER0 '())
 
-(define SEASON1 (list WINTER))
+(define QUARTER1 (list WINTER))
 
 ; a system is one of:
 ; - '()
@@ -154,6 +147,15 @@
 
 (define SYSTEM1 (list ECONOMY0))
 
+; a Currency is a structure
+; (make-currency Jewel Input Output Season Economy)
+; currency is the state of the program. It is represented by a tree.
+; Each field represents an interaction with the system. 
+
+(define CURRENCY0 (make-currency '() '() '() '() '()))
+
+(define CURRENCY1 (make-currency JEWEL1 INPUT1 OUTPUT1 QUARTER1 SYSTEM1))
+
 ; functions
 
 ; Currency -> Currency
@@ -162,8 +164,50 @@
 
 (check-expect (tock CURRENCY0) CURRENCY0)
 
-(check-expect (tock (make-currency '() '() '() '() '())) CURRENCY0)
-                     
+; Currency -> Image
+; consumes a currency c, and draws an image to the screen
+
+(check-expect (render-fruit CURRENCY0) MT)
+
+(check-expect (render-fruit (make-currency '() '()
+                                           (list BLOOD PEACH LIME
+                                                 BERRY MANGO) '() '()))
+              (place-images (list (create-fruit BLOOD)
+                                  (create-fruit PEACH)
+                                  (create-fruit LIME)
+                                  (create-fruit BERRY)
+                                  (create-fruit MANGO))
+                            (list (make-posn 0 0)
+                                  (make-posn 0 0)
+                                  (make-posn 0 0)
+                                  (make-posn 0 0)
+                                  (make-posn 0 0)) MT))
+
+(define (fn-render-fruit c)
+  (cond
+    [(empty? (currency-output c)) ...]
+    [else (... (create-fruit (first (currency-output c)))
+               (posn-x (fruit-position (first (currency-output c))))
+               (posn-y (fruit-position (first (currency-output c))))
+               (fn-render-fruit (make-currency
+                                 (currency-jewel c)
+                                 (currency-input c)
+                                 (rest (currency-output c))
+                                 (currency-quarter c)
+                                 (currency-system c))))]))
+
+(define (render-fruit c)
+  (cond
+    [(empty? (currency-output c)) MT]
+    [else (place-image (create-fruit (first (currency-output c)))
+               (posn-x (fruit-position (first (currency-output c))))
+               (posn-y (fruit-position (first (currency-output c))))
+               (render-fruit (make-currency
+                                 (currency-jewel c)
+                                 (currency-input c)
+                                 (rest (currency-output c))
+                                 (currency-quarter c)
+                                 (currency-system c))))]))
 
 ; Currency -> Currency
 ; launches the program from some initial state c
