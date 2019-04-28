@@ -72,9 +72,9 @@
 ; a climate is an input into; Oxygen, UV, precipitation, temperature
 
 (define O2 (make-nutrient "Oxygen" "O2" 0 ""))
-(define WAVE (make-nutrient "Light" "EMS" 0 ""))
-(define WATER (make-nutrient "Precipitation" "H2O" 0 ""))
-(define TEMP (make-nutrient "Temperature" "C" 0 ""))
+(define LIGHT (make-nutrient "Light" "EMW" 0 ""))
+(define H20 (make-nutrient "Precipitation" "H2O" 0 ""))
+(define TEMPERATURE (make-nutrient "Temperature" "C" 0 ""))
 
 ; a Fruit is a structure
 ; (make-fruit String String Posn Number String)
@@ -100,12 +100,16 @@
 ; (make-economoy Number Number Number Number)
 ; an economy represents the empiric value of the system donated in gems
 
-(define ECONOMY (make-economy 0 0 0 0))
+(define ECONOMY0 (make-economy 0 0 0 0))
 
 ; a Jewel is one of:
 ; - '()
 ; (cons gem jewel)
 ; a Jewel is a list of gems
+
+(define JEWEL0 '())
+
+(define JEWEL1 (list RUBY TURQUOISE QUARTZ SAPHIRE OPAL))
 
 ; an Input is one of:
 ; - '()
@@ -115,13 +119,21 @@
 ; an input is a list of external inputs that create currency (gems)
 ; by the tree
 
+(define INPUT0 '())
+
+(define INPUT1 (list CA CU N2 O2 H20 LIGHT TEMPERATURE))
+
 ; an output is one of:
 ; - '()
 ; - (cons fruit output)
 ; - (cons climate output)
 ; - (cons nutrient output)
-; an oupput is a list of internal exports that go back into the system and
+; an oupput is a list exports that go back into the system and
 ; exhaust currency (gems)
+
+(define OUTPUT0 '())
+
+(define OUPUT1 (list BLOOD LIME PEACH BERRY MANGO))
 
 ; a Quarter is one of:
 ; - '()
@@ -129,10 +141,18 @@
 ; a quarter is a either Winter, Spring, Summer, and Autumn.
 ; each season affects the inputs and outputs of the system by a value, delta
 
+(define SEASON0 '())
+
+(define SEASON1 (list WINTER))
+
 ; a system is one of:
 ; - '()
-; - (cons supply (cons demand (cons gdp (cons inflation system))))
+; - (cons economy system)))
 ; a system is a list of numbers representing its economic value 
+
+(define SYSTEM0 '())
+
+(define SYSTEM1 (list ECONOMY0))
 
 ; functions
 
