@@ -167,42 +167,65 @@
 ; Currency -> Image
 ; consumes a currency c, and draws an image to the screen
 
-(check-expect (render-fruit CURRENCY0) MT)
+(check-expect (render-jewel
+               (make-currency (list RUBY) '() '() '() '()))
+              (place-image (create-gem RUBY) 20 20 MT))
 
-(check-expect (render-fruit (make-currency '() '()
-                                           (list BLOOD PEACH LIME
-                                                 BERRY MANGO) '() '()))
-              (place-images (list (create-fruit BLOOD)
-                                  (create-fruit PEACH)
-                                  (create-fruit LIME)
-                                  (create-fruit BERRY)
-                                  (create-fruit MANGO))
-                            (list (make-posn 0 0)
-                                  (make-posn 0 0)
-                                  (make-posn 0 0)
-                                  (make-posn 0 0)
-                                  (make-posn 0 0)) MT))
+(define (fn-render-jewel c)
+  (cond
+    [(empty? (currency-jewel c)) ...]
+    [else (... (create-gem (first (currency-jewel c)))
+               (posn-x (gem-position (first (currency-jewel c))))
+               (posn-y (gem-position (first (currency-jewel c))))
+               (fn-render-jewel (make-currency
+                                 (rest (currency-jewel c))
+                                 (currency-input c)
+                                 (currency-output c)
+                                 (currency-quarter c)
+                                 (currency-system c))))]))
 
-(define (fn-render-fruit c)
+(define (render-jewel c)
+  (cond
+    [(empty? (currency-jewel c)) MT]
+    [else (place-image (create-gem (first (currency-jewel c)))
+               (posn-x (gem-position (first (currency-jewel c))))
+               (posn-y (gem-position (first (currency-jewel c))))
+               (render-jewel (make-currency
+                                 (rest (currency-jewel c))
+                                 (currency-input c)
+                                 (currency-output c)
+                                 (currency-quarter c)
+                                 (currency-system c))))]))
+
+; Currency -> Image
+; consumes a currency c, and draws an image to the screen
+
+(check-expect (render-output CURRENCY0) MT)
+
+(check-expect (render-output
+               (make-currency '() '() (list BLOOD) '() '()))
+              (place-image (create-fruit BLOOD) 0 0 MT))
+
+(define (fn-render-output c)
   (cond
     [(empty? (currency-output c)) ...]
     [else (... (create-fruit (first (currency-output c)))
                (posn-x (fruit-position (first (currency-output c))))
                (posn-y (fruit-position (first (currency-output c))))
-               (fn-render-fruit (make-currency
+               (fn-render-output (make-currency
                                  (currency-jewel c)
                                  (currency-input c)
                                  (rest (currency-output c))
                                  (currency-quarter c)
                                  (currency-system c))))]))
 
-(define (render-fruit c)
+(define (render-output c)
   (cond
     [(empty? (currency-output c)) MT]
     [else (place-image (create-fruit (first (currency-output c)))
                (posn-x (fruit-position (first (currency-output c))))
                (posn-y (fruit-position (first (currency-output c))))
-               (render-fruit (make-currency
+               (render-output (make-currency
                                  (currency-jewel c)
                                  (currency-input c)
                                  (rest (currency-output c))
