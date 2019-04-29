@@ -31,7 +31,7 @@
    0 (* SCENE-SIZE 0.25) SCENE-SIZE (* SCENE-SIZE 0.25) 'black))
 
 ; structures
-(define-struct currency [jewel input output quarter system]) 
+(define-struct currency [jewel input output season economy]) 
 (define-struct gem [colour position delta sound])
 (define-struct nutrient [type symbol delta sound])
 (define-struct climate [type symbol delta sound])
@@ -46,48 +46,48 @@
 ; a gem is a unit of currency. Inputs are exchanged into
 ; gems that when combined are exchanged again into outputs
 
-(define RUBY (make-gem TOMATO (make-posn SIZE SIZE) 0 ""))
-(define TURQUOISE (make-gem AQUAMARINE (make-posn (* 2 SIZE) (* 2 SIZE)) 0 ""))
-(define QUARTZ (make-gem VIOLET (make-posn (* 3 SIZE) (* 3 SIZE)) 0 ""))
-(define SAPHIRE (make-gem CORNFLOWERBLUE (make-posn (* 4 SIZE) (* 4 SIZE)) 0 ""))
-(define OPAL (make-gem GOLD (make-posn (* 5 SIZE) (* 5 SIZE)) 0 ""))
+(define RUBY (make-gem TOMATO (make-posn SIZE SIZE) 1 ""))
+(define TURQUOISE (make-gem AQUAMARINE (make-posn (* 2 SIZE) (* 2 SIZE)) 1 ""))
+(define QUARTZ (make-gem VIOLET (make-posn (* 3 SIZE) (* 3 SIZE)) 1 ""))
+(define SAPHIRE (make-gem CORNFLOWERBLUE (make-posn (* 4 SIZE) (* 4 SIZE)) 1 ""))
+(define OPAL (make-gem GOLD (make-posn (* 5 SIZE) (* 5 SIZE)) 1 ""))
 
 ; a Nutrient is a structure
 ; (make-nutrient String String Number String)
 ; a nutrient represents an input; Nitrogen, Calcium, Copper etc.
 
-(define N2 (make-nutrient "Nitrogen" "N2" 0 ""))
-(define CA (make-nutrient "Calcium" "Ca" 0 ""))
-(define CU (make-nutrient "Copper" "Cu" 0 ""))
+(define N2 (make-nutrient "Nitrogen" "N2" 1 ""))
+(define CA (make-nutrient "Calcium" "Ca" 1 ""))
+(define CU (make-nutrient "Copper" "Cu" 1 ""))
 
 ; a Climate is a structure
 ; (make-climate String String Number String)
 ; a climate is an input into; Oxygen, UV, precipitation, temperature
 
-(define O2 (make-nutrient "Oxygen" "O2" 0 ""))
-(define LIGHT (make-nutrient "Light" "EMW" 0 ""))
-(define H20 (make-nutrient "Precipitation" "H2O" 0 ""))
-(define TEMPERATURE (make-nutrient "Temperature" "C" 0 ""))
+(define O2 (make-nutrient "Oxygen" "O2" 1 ""))
+(define LIGHT (make-nutrient "Light" "EMW" 1 ""))
+(define H20 (make-nutrient "Precipitation" "H2O" 1 ""))
+(define TEMPERATURE (make-nutrient "Temperature" "C" 1 ""))
 
 ; a Fruit is a structure
 ; (make-fruit String String Posn Number String)
 ; a fruit is an output
 
-(define BLOOD (make-fruit "Blood orange" TOMATO (make-posn 0 0) 0 ""))
-(define LIME (make-fruit "Lime" AQUAMARINE (make-posn 0 0) 0 ""))
-(define PEACH (make-fruit "Peach" VIOLET (make-posn 0 0) 0 ""))
-(define BERRY (make-fruit "Blueberry" CORNFLOWERBLUE (make-posn 0 0) 0 ""))
-(define MANGO (make-fruit "Mango" GOLD (make-posn 0 0) 0 ""))
+(define BLOOD (make-fruit "Blood orange" TOMATO (make-posn 0 0) 1 ""))
+(define LIME (make-fruit "Lime" AQUAMARINE (make-posn 0 0) 1 ""))
+(define PEACH (make-fruit "Peach" VIOLET (make-posn 0 0) 1 ""))
+(define BERRY (make-fruit "Blueberry" CORNFLOWERBLUE (make-posn 0 0) 1 ""))
+(define MANGO (make-fruit "Mango" GOLD (make-posn 0 0) 1 ""))
 
 ; a Season is a structure
 ; (make-season String Number String)
-; a season is the current quarter and represents the dynamic force
+; a season represents the dynamic force
 ; acting upon the inputs and otputs of the system
 
-(define SPRING (make-season "Spring" 0 ""))
-(define SUMMER (make-season "Summer" 0 ""))
-(define AUTUMN (make-season "Autumn" 0 ""))
-(define WINTER (make-season "Winter" 0 ""))
+(define SUMMER (make-season "Summer" 4 ""))
+(define SPRING (make-season "Spring" 3 ""))
+(define AUTUMN (make-season "Autumn" 2 ""))
+(define WINTER (make-season "Winter" 1 ""))
 
 ; an Economy is a structure
 ; (make-economoy Number Number Number Number)
@@ -128,41 +128,36 @@
 
 (define OUTPUT1 (list BLOOD LIME PEACH BERRY MANGO))
 
-; a Quarter is one of:
-; - '()
-; - (cons season quarter)
-; a quarter is a either Winter, Spring, Summer, and Autumn.
-; each season affects the inputs and outputs of the system by a value, delta
-
-(define QUARTER0 '())
-
-(define QUARTER1 (list WINTER))
-
-; a system is one of:
-; - '()
-; - (cons economy system)))
-; a system is a list of numbers representing its economic value 
-
-(define SYSTEM0 '())
-
-(define SYSTEM1 (list ECONOMY0))
-
 ; a Currency is a structure
 ; (make-currency Jewel Input Output Season Economy)
 ; currency is the state of the program. It is represented by a tree.
 ; Each field represents an interaction with the system. 
 
-(define CURRENCY0 (make-currency '() '() '() '() '()))
+(define CURRENCY0 (make-currency '() '() '()
+                                 (make-season "" 0 "")
+                                 (make-economy 0 0 0 0)))
 
-(define CURRENCY1 (make-currency JEWEL1 INPUT1 OUTPUT1 QUARTER1 SYSTEM1))
+(define CURRENCY1 (make-currency JEWEL1 INPUT1 OUTPUT1 SUMMER ECONOMY0))
 
 ; functions
 
 ; Currency -> Currency
 ; consumes a currency c and updates it each tick
-(define (tock c) c)
 
-(check-expect (tock CURRENCY0) CURRENCY0)
+(check-expect (checked-tock CURRENCY0) CURRENCY0)
+
+(check-expect (checked-tock
+               (make-currency (list RUBY) '() (list BLOOD) WINTER ECONOMY0))
+              (make-currency (list RUBY)
+                             (list O2)
+                             (list BLOOD)
+                             WINTER ECONOMY0))
+
+(define (checked-tock c) c)
+
+(define (fn-tock c) c)
+
+(define (tock c) c)
 
 ; Currency -> Image
 ; consumes a currency c, and draws an image to the screen
@@ -183,8 +178,8 @@
                                  (rest (currency-jewel c))
                                  (currency-input c)
                                  (currency-output c)
-                                 (currency-quarter c)
-                                 (currency-system c)) ...))]))
+                                 (currency-season c)
+                                 (currency-economy c)) ...))]))
 
 (define (render-jewel c im)
   (cond
@@ -196,8 +191,8 @@
                                       (rest (currency-jewel c))
                                       (currency-input c)
                                       (currency-output c)
-                                      (currency-quarter c)
-                                      (currency-system c)) im))]))
+                                      (currency-season c)
+                                      (currency-economy c)) im))]))
 
 ; Currency -> Image
 ; consumes a currency c, and draws an image to the screen
@@ -218,8 +213,8 @@
                                   (currency-jewel c)
                                   (currency-input c)
                                   (rest (currency-output c))
-                                  (currency-quarter c)
-                                  (currency-system c)) ...))]))
+                                  (currency-season c)
+                                  (currency-economy c)) ...))]))
 
 (define (render-output c im)
   (cond
@@ -231,8 +226,8 @@
                                        (currency-jewel c)
                                        (currency-input c)
                                        (rest (currency-output c))
-                                       (currency-quarter c)
-                                       (currency-system c)) im))]))
+                                       (currency-season c)
+                                       (currency-economy c)) im))]))
 
 ; Currency -> Image
 ; consumes a currency c, and draws an image to the screen
@@ -251,19 +246,24 @@
   (render-jewel c
                 (render-output c MT)))
 
+; Currency MouseEvent -> Currency
+; consumes a currency c, a mouse event me, and outputs a new currency
+
+(define (click c me) c)
+
 ; Currency -> Currency
 ; launches the program from some initial state c
 
-;(define (cursim-main rate)
-;  (big-bang CURRENCY0
-;    [on-tick tock rate]
-;    [to-draw render]
+(define (cursim rate)
+  (big-bang CURRENCY0
+    [on-tick tock rate]
+    [to-draw render]
 ;    [on-mouse click]
 ;    [stop-when last-world-? last-picture]
-;    [state #t]
+    [state #t]
 ;    [close-on-stop 3]
-;    [name "Cursim"]
-;    ))
+    [name "Cursim"]
+    ))
 
 ; usage
 ;(cursim 1)
