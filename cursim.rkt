@@ -234,22 +234,93 @@
 
 (check-expect (render CURRENCY0) MT)
 
-(check-expect (render (make-currency (list RUBY) '() (list BLOOD) '() '()))
-              (place-image (create-gem RUBY) 20 20
-                           (place-image (create-fruit BLOOD) 0 0 MT)))
+(check-expect
+ (render
+  (make-currency
+   (list RUBY)
+   '()
+   (list BLOOD)
+   WINTER ECONOMY0))
+ (place-image
+  (create-gem RUBY)
+  20 20
+  (place-image
+   (create-fruit BLOOD) 0 0
+   (overlay/align/offset
+    "left" "top"
+    (beside (text
+             (string-append "| Supply: " (number->string
+                                          (economy-supply ECONOMY0))) 16 'black)
+            (text
+             (string-append " | Gems: " (number->string
+                                         (economy-demand ECONOMY0))) 16 'black)
+            (text (string-append " | Fruit: "
+                                 (number->string
+                                  (economy-gdp ECONOMY0)) " |")
+                  16 'black)) -5 -5 MT))))
                                   
 (define (fn-render c)
   (render-jewel c
-                (render-output c ...)))
+                (render-output c
+                               (render-economy c ...))))
 
 (define (render c)
   (render-jewel c
-                (render-output c MT)))
+                (render-output c
+                               (render-economy c MT))))
 
 ; Currency MouseEvent -> Currency
 ; consumes a currency c, a mouse event me, and outputs a new currency
 
 (define (click c me) c)
+
+; Currency -> Image
+; consumes a currency c, and draws the economy info bar to the screen
+
+(check-expect (render-economy
+               (make-currency '() '() '() '() ECONOMY0) MT)
+              (overlay/align/offset
+               "left" "top"
+               (beside (text
+                        (string-append "| Supply: " (number->string
+                                                     (economy-supply ECONOMY0))) 16 'black)
+                       (text
+                        (string-append " | Gems: " (number->string
+                                                    (economy-demand ECONOMY0))) 16 'black)
+                       (text (string-append " | Fruit: "
+                                            (number->string
+                                             (economy-gdp ECONOMY0)) " |")
+                             16 'black))
+               -5 -5 MT))
+
+(define (fn-render-economy c im)
+  (overlay/align/offset
+   ... ...
+   (beside
+    (text
+     (string-append ...
+      (number->string (economy-demand (currency-economy c)))) ... ...)
+    (text (string-append ...
+           (number->string (economy-supply (currency-economy c)))) ... ...)
+    (text (string-append ...
+           (number->string (economy-gdp (currency-economy c)))) ...))
+   ... ... ...))
+
+(define (render-economy c im)
+  (overlay/align/offset
+   "left" "top"
+   (beside
+    (text
+     (string-append "| Supply: "
+                    (number->string
+                     (economy-supply (currency-economy c)))) 16 'black)
+    (text (string-append " | Gems: "
+                         (number->string
+                          (economy-demand (currency-economy c)))) 16 'black)
+    (text (string-append " | Fruit: "
+                         (number->string
+                          (economy-gdp (currency-economy c))) " |") 16 'black))
+   -5 -5 im))
 
 ; Currency -> Currency
 ; launches the program from some initial state c
@@ -258,10 +329,10 @@
   (big-bang CURRENCY0
     [on-tick tock rate]
     [to-draw render]
-;    [on-mouse click]
-;    [stop-when last-world-? last-picture]
+    ;    [on-mouse click]
+    ;    [stop-when last-world-? last-picture]
     [state #t]
-;    [close-on-stop 3]
+    ;    [close-on-stop 3]
     [name "Cursim"]
     ))
 
