@@ -22,6 +22,7 @@
 (define CORNFLOWERBLUE "Cornflowerblue")
 (define GOLD "gold")
 (define CYCLE-PER-SEASON 10)
+(define GEM-THRESHOLD 100)
 
 ; graphical constants
 (define (create-gem g) (rhombus GEM-SIZE ANGLE "solid" (gem-colour g)))
@@ -117,6 +118,15 @@
 
 (define INPUT1 (list CA CU N2 O2 H20 LIGHT TEMPERATURE))
 
+(define INPUT2 (list CA CU N2 O2 H20 LIGHT TEMPERATURE
+                     CA CU N2 O2 H20 LIGHT TEMPERATURE
+                     CA CU N2 O2 H20 LIGHT TEMPERATURE
+                     CA CU N2 O2 H20 LIGHT TEMPERATURE
+                     CA CU N2 O2 H20 LIGHT TEMPERATURE
+                     CA CU N2 O2 H20 LIGHT TEMPERATURE
+                     CA CU N2 O2 H20 LIGHT TEMPERATURE
+                     CA CU N2 O2 H20 LIGHT TEMPERATURE))
+
 ; an output is one of:
 ; - '()
 ; - (cons fruit output)
@@ -135,8 +145,8 @@
 ; Each field represents an interaction with the system. 
 
 (define CURRENCY0 (make-currency '() '() '()
-                                 (make-season "" 0 "")
-                                 (make-economy 0 0 0 0)))
+                                 SPRING
+                                 ECONOMY0))
 
 (define CURRENCY1 (make-currency JEWEL1 INPUT1 OUTPUT1 SUMMER ECONOMY0))
 
@@ -319,12 +329,27 @@
 
 (define (checked-tock c) c)
 
-(define (fn-tock c) c)
+(define (fn-tock c)
+  (make-currency
+   (cond
+     [else (if (gem-threshold? c)
+               (generate-gem c)
+               (currency-jewel c))])
+   (generate-input c)
+   (cond
+     [else (if (fruit-threshold? (currency-jewel c))
+               (generate-fruit c)
+               (currency-output c))])
+   (cond
+     (else (if (change-season? c)
+               (set-season c)
+               (currency-season c))))
+   (update-economy c)))
 
 (define (tock c)
   (make-currency
    (cond
-     [else (if (gem-threshold? (currency-input c) (currency-season c))
+     [else (if (gem-threshold? c)
                (generate-gem c)
                (currency-jewel c))])
    (generate-input c)
@@ -337,12 +362,31 @@
                    (currency-season c))))
    (update-economy c)))
     
-
-
 ; Currency -> Boolean
-; consumes input in, and season s, returns true if the required number of inputs have been
-; reached to make a new gem
-(define (gem-threshold? in s) #false)
+; consumes a currency c, returns true if the required number of
+; inputs have been reached to make a new gem
+
+(check-expect (gem-threshold? CURRENCY0) #false)
+
+(check-expect (gem-threshold?
+               (make-currency '() INPUT2 '() WINTER ECONOMY0)) #false)
+
+(check-expect (gem-threshold?
+               (make-currency '() INPUT2 '() AUTUMN ECONOMY0)) #true) 
+
+(define (fn-gem-threshold? c)
+  (cond
+    [else (if (... (... (length (currency-input c))
+                        (season-delta (currency-season c))) ...)
+              ...
+              ...)]))
+
+(define (gem-threshold? c)
+  (cond
+    [else (if (>= (* (length (currency-input c))
+                     (season-delta (currency-season c))) GEM-THRESHOLD)
+              #true
+              #false)]))
 
 ; Currency -> Currency
 ; consumes a currency c, outputs a randomly
