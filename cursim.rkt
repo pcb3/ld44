@@ -391,7 +391,164 @@
 ; Currency -> Currency
 ; consumes a currency c, outputs a randomly
 ; generated gem and adds it to jewel
-(define (generate-gem c) c)
+
+(check-expect (checked-generate-gem CURRENCY0)
+              (make-currency
+               (cons RUBY (currency-jewel CURRENCY0))
+               '() '() SPRING ECONOMY0))
+
+(define (checked-generate-gem c)
+  (make-currency
+   (cons RUBY (currency-jewel c))
+   (currency-input c)
+   (currency-output c)
+   (currency-season c)
+   (currency-economy c)))
+
+(define (fn-generate-gem c)
+  (...
+   (... (... ...) (currency-jewel c))
+   (currency-input c)
+   (currency-output c)
+   (currency-season c)
+   (currecny-economy c)))
+                          
+(define (generate-gem c)
+  (make-currency
+   (cons (random-gem c 5) (currency-jewel c))
+   (currency-input c)
+   (currency-output c)
+   (currency-season c)
+   (currency-economy c)))
+
+; Number -> Gem
+; consumes a currency c, number n, and outputs a randomly selected gem
+; with a position determined by jewel
+
+(check-expect (checked-random-gem CURRENCY0 0) RUBY)
+
+(define (checked-random-gem c n)
+  (cond [(equal? n 0) RUBY]
+        [(equal? n 1) TURQUOISE]
+        [(equal? n 2) QUARTZ]
+        [(equal? n 3) SAPHIRE]
+        [(equal? n 4) OPAL]))
+
+(define (fn-random-gem c n)
+  (cond
+    [(zero? (random n))
+     (make-gem
+      ...
+      (cond
+        [else
+         (if (empty? (currency-jewel c))
+             (make-posn ... ...)
+             (make-posn
+              (... (posn-x (gem-position (first (currency-jewel c)))) ...)
+              (... (posn-y (gem-position (first (currency-jewel c)))) ...)))])
+      ... "")]
+    [(equal? (random n) ...)
+     (make-gem
+      ...
+      (cond
+        [else
+         (if (empty? (currency-jewel c))
+             (make-posn ... ...)
+             (make-posn
+              (... (posn-x (gem-position (first (currency-jewel c)))) ...)
+              (... (posn-y (gem-position (first (currency-jewel c)))) ...)))])
+      ... "")]
+    [(equal? (random n) ...)
+     (make-gem
+      ...
+      (cond
+        [else
+         (if (empty? (currency-jewel c))
+             (make-posn ... ...)
+             (make-posn
+              (... (posn-x (gem-position (first (currency-jewel c)))) ...)
+              (... (posn-y (gem-position (first (currency-jewel c)))) ...)))])
+      ... "")]
+    [(equal? (random n) ...)
+     (make-gem
+      ...
+      (cond
+        [else
+         (if (empty? (currency-jewel c))
+             (make-posn ... ...)
+             (make-posn
+              (... (posn-x (gem-position (first (currency-jewel c)))) ...)
+              (... (posn-y (gem-position (first (currency-jewel c)))) ...)))])
+      ... "")]
+    [(equal? (random n) ...)
+     (make-gem
+      ...
+      (cond
+        [else
+         (if (empty? (currency-jewel c))
+             (make-posn ... ...)
+             (make-posn
+              (... (posn-x (gem-position (first (currency-jewel c)))) ...)
+              (... (posn-y (gem-position (first (currency-jewel c)))) ...)))])
+      ... "")]))
+    
+(define (random-gem c n)
+  (cond
+    [(zero? (random n))
+     (make-gem
+      "Ruby"
+      (cond
+        [else
+         (if (empty? (currency-jewel c))
+             (make-posn SIZE SIZE)
+             (make-posn
+              (+ (posn-x (gem-position (first (currency-jewel c)))) SIZE)
+              (+ (posn-y (gem-position (first (currency-jewel c)))) SIZE)))])
+      1 "")]
+    [(equal? (random n) 1)
+     (make-gem
+      "Turquoise"
+      (cond
+        [else
+         (if (empty? (currency-jewel c))
+             (make-posn SIZE SIZE)
+             (make-posn
+              (+ (posn-x (gem-position (first (currency-jewel c)))) SIZE)
+              (+ (posn-y (gem-position (first (currency-jewel c)))) SIZE)))])
+      1 "")]
+    [(equal? (random n) 2)
+     (make-gem
+      "Quartz"
+      (cond
+        [else
+         (if (empty? (currency-jewel c))
+             (make-posn SIZE SIZE)
+             (make-posn
+              (+ (posn-x (gem-position (first (currency-jewel c)))) SIZE)
+              (+ (posn-y (gem-position (first (currency-jewel c)))) SIZE)))])
+      1 "")]
+    [(equal? (random n) 3)
+     (make-gem
+      "Saphire"
+      (cond
+        [else
+         (if (empty? (currency-jewel c))
+             (make-posn SIZE SIZE)
+             (make-posn
+              (+ (posn-x (gem-position (first (currency-jewel c)))) SIZE)
+              (+ (posn-y (gem-position (first (currency-jewel c)))) SIZE)))])
+      1 "")]
+    [(equal? (random n) 4)
+     (make-gem
+      "Opal"
+      (cond
+        [else
+         (if (empty? (currency-jewel c))
+             (make-posn SIZE SIZE)
+             (make-posn
+              (+ (posn-x (gem-position (first (currency-jewel c)))) SIZE)
+              (+ (posn-y (gem-position (first (currency-jewel c)))) SIZE)))])
+      1 "")]))
 
 ; Currency -> Currency
 ; consumes a currency c, randomly generates an input, adds it to the list,
