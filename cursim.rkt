@@ -141,24 +141,6 @@
 
 ; functions
 
-; Currency -> Currency
-; consumes a currency c and updates it each tick
-
-(check-expect (checked-tock CURRENCY0) CURRENCY0)
-
-(check-expect (checked-tock
-               (make-currency (list RUBY) '() (list BLOOD) WINTER ECONOMY0))
-              (make-currency (list RUBY)
-                             (list O2)
-                             (list BLOOD)
-                             WINTER ECONOMY0))
-
-(define (checked-tock c) c)
-
-(define (fn-tock c) c)
-
-(define (tock c) c)
-
 ; Currency -> Image
 ; consumes a currency c, and draws an image to the screen
 
@@ -321,6 +303,65 @@
                          (number->string
                           (economy-gdp (currency-economy c))) " |") 16 'black))
    -5 -5 im))
+
+; Currency -> Currency
+; consumes a currency c and updates it each tick
+
+(check-expect (checked-tock CURRENCY0) CURRENCY0)
+
+(check-expect (checked-tock
+               (make-currency (list RUBY) '() (list BLOOD) WINTER ECONOMY0))
+              (make-currency (list RUBY)
+                             (list O2)
+                             (list BLOOD)
+                             WINTER ECONOMY0))
+
+(define (checked-tock c) c)
+
+(define (fn-tock c)
+  (cond
+    [(change-season? c)
+     (set-season c)]
+    [(gem-threshold? (currency-input c))
+     (generate-input-and-gem c)]
+    [(fruit-threshold? (currency-jewel c))
+     (generate-fruit c)]))
+
+(define (tock c)
+   (cond
+    [(change-season? c)
+     (set-season c)]
+    [(gem-threshold? (currency-input c))
+     (generate-input-and-gem c)]
+    [(fruit-threshold? (currency-jewel c))
+     (generate-fruit c)]))
+
+; Currency -> Boolean
+; consumes a currency c, checks and updates the season if true
+(define (change-season? c) #false)
+
+; Currency -> Currency
+; consumes a currency c, outputs new currency with updated season field.
+(define (set-season c) c)
+
+; Currency -> Boolean
+; consumes a currency c, returns true if the required number of inputs have been
+; reached to make a new gem
+(define (gem-threshold c) c)
+
+; Currency -> Currency
+; consumes a currency c, outputs a new currency with a new random input
+; and a new random gem.
+(define (generate-input-and-gem c) c)
+
+; Currency -> Currency
+; consumes a currency c, returns true if the the number and type of gems
+; to generate a new fruit has been reached
+(define (fruit-threshold c) c)
+
+; Currency -> Currency
+; consumes a currency c, generates a new fruit dependent on jewel composition
+(define (generate-fruit c) c)
 
 ; Currency -> Currency
 ; launches the program from some initial state c
