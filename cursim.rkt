@@ -21,6 +21,7 @@
 (define VIOLET "violet")
 (define CORNFLOWERBLUE "Cornflowerblue")
 (define GOLD "gold")
+(define CYCLE-PER-SEASON 10)
 
 ; graphical constants
 (define (create-gem g) (rhombus GEM-SIZE ANGLE "solid" (gem-colour g)))
@@ -337,17 +338,81 @@
      (generate-fruit c)]))
 
 ; Currency -> Boolean
-; consumes a currency c, checks and updates the season if true
-(define (change-season? c) #false)
+; consumes a currency c, checks and updates the season if the umber of inputs
+; (cycles) has been reached
+
+(check-expect (change-season?
+               (make-currency (list O2 O2 O2 O2 O2 O2 O2 O2 O2 O2)
+                              '() '() WINTER ECONOMY0))
+              #true)
+
+(check-expect (change-season?
+               (make-currency '() '() '() WINTER ECONOMY0))
+              #false)
+
+(define (fn-change-season? c)
+  (cond
+    [(empty? (currency-season c)) ...]
+    [(zero? (modulo (length (currency-input c)) ...)) ...]
+    [else ...]))
+
+(define (change-season? c)
+  (cond
+    [(empty? (currency-season c)) #false]
+    [(zero? (modulo (length (currency-input c)) CYCLE-PER-SEASON)) #true]
+    [else #false]))
 
 ; Currency -> Currency
 ; consumes a currency c, outputs new currency with updated season field.
-(define (set-season c) c)
+
+(check-expect (set-season
+               (make-currency '() '() '() SPRING ECONOMY0))
+              (make-currency '() '() '() SUMMER ECONOMY0))
+
+(check-expect (set-season
+               (make-currency '() '() '() WINTER ECONOMY0))
+              (make-currency '() '() '() SPRING ECONOMY0))
+
+(define (fn-set-season c)
+     (make-currency (currency-jewel c)
+                    (currency-input c)
+                    (currency-output c)
+                    (make-season
+                     (cond
+                       [(equal? ... (season-quarter (currency-season c)))
+                        ...]
+                       [(equal? ... (season-quarter (currency-season c)))
+                        ...]
+                       [(equal? ... (season-quarter (currency-season c)))
+                        ...]
+                       [(equal? ... (season-quarter (currency-season c)))
+                        ...])
+                    (season-delta (currency-season c))
+                    (season-sound (currency-season c)))
+                    (currency-economy c)))
+
+(define (set-season c)
+  (make-currency (currency-jewel c)
+                    (currency-input c)
+                    (currency-output c)
+                    (make-season
+                     (cond
+                       [(equal? "Spring" (season-quarter (currency-season c)))
+                        "Summer"]
+                       [(equal? "Summer" (season-quarter (currency-season c)))
+                        "Autumn"]
+                       [(equal? "Autumn" (season-quarter (currency-season c)))
+                        "Winter"]
+                       [(equal? "Winter" (season-quarter (currency-season c)))
+                        "Spring"])
+                    (season-delta (currency-season c))
+                    (season-sound (currency-season c)))
+                    (currency-economy c)))
 
 ; Currency -> Boolean
 ; consumes a currency c, returns true if the required number of inputs have been
 ; reached to make a new gem
-(define (gem-threshold c) c)
+(define (gem-threshold? c) c)
 
 ; Currency -> Currency
 ; consumes a currency c, outputs a new currency with a new random input
@@ -357,7 +422,7 @@
 ; Currency -> Currency
 ; consumes a currency c, returns true if the the number and type of gems
 ; to generate a new fruit has been reached
-(define (fruit-threshold c) c)
+(define (fruit-threshold? c) c)
 
 ; Currency -> Currency
 ; consumes a currency c, generates a new fruit dependent on jewel composition
