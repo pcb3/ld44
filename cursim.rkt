@@ -335,7 +335,7 @@
      [else (if (gem-threshold? c)
                (generate-gem c)
                (currency-jewel c))])
-   (generate-input c)
+   (generate-nutrient c)
    (cond
      [else (if (fruit-threshold? (currency-jewel c))
                (generate-fruit c)
@@ -352,7 +352,7 @@
      [else (if (gem-threshold? c)
                (generate-gem c)
                (currency-jewel c))])
-   (generate-input c)
+   (generate-nutrient c)
    (cond
      [else (if (fruit-threshold? (currency-jewel c))
                (generate-fruit c)
@@ -551,9 +551,58 @@
       1 "")]))
 
 ; Currency -> Currency
-; consumes a currency c, randomly generates an input, adds it to the list,
+; consumes a currency c, randomly generates a nutrient, adds it to the list,
 ; and returns input
-(define (generate-input c) c)
+
+(check-expect (generate-nutrient CURRENCY0)
+              (make-currency '() (list O2) '() WINTER ECONOMY0))
+
+(define (checked-generate-nutrient c)
+  (make-currency
+   (currency-jewel c)
+   (cons O2 (currency-input c))
+   (currency-output c)
+   (currency-season c)
+   (currency-economy c)))
+
+(define (fn-generate-nutrient c)
+(...
+   (currency-jewel c)
+   (... (... (...)) (currency-input c))
+   (currency-output c)
+   (currency-season c)
+   (currency-economy c)))
+     
+(define (generate-nutrient c)
+  (make-currency
+   (currency-jewel c)
+   (cons (random-nutrient (random 6)) (currency-input c))
+   (currency-output c)
+   (currency-season c)
+   (currency-economy c)))
+
+; Currency Number -> Nutrient
+; consumes a currency c and a number n, and outputs a random nutrient
+
+(check-expect (random-nutrient 3) O2)
+
+(define (fn-random-nutrient n)
+  (cond [(zero? n) CA]
+        [(equal? n 1) CU]
+        [(equal? n 2) N2]
+        [(equal? n 3) O2]
+        [(equal? n 4) H20]
+        [(equal? n 5) LIGHT]
+        [(equal? n 6) TEMPERATURE]))
+
+(define (random-nutrient n)
+  (cond [(zero? n) CA]
+        [(equal? n 1) CU]
+        [(equal? n 2) N2]
+        [(equal? n 3) O2]
+        [(equal? n 4) H20]
+        [(equal? n 5) LIGHT]
+        [(equal? n 6) TEMPERATURE]))
 
 ; Currency -> Currency
 ; consumes a jewel j, returns true if the the number and type of gems
