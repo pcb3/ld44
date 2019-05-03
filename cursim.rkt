@@ -23,6 +23,7 @@
 (define GOLD "gold")
 (define CYCLE-PER-SEASON 10)
 (define GEM-THRESHOLD 100)
+(define FRUIT-THRESHOLD 100)
 
 ; graphical constants
 (define (create-gem g) (rhombus GEM-SIZE ANGLE "solid" (gem-colour g)))
@@ -273,7 +274,7 @@
 (check-expect (render-economy
                (make-currency '() '() '() '() ECONOMY0) MT)
               (overlay/align/offset
-               "left" "top"
+               "center" "top"
                (beside (text
                         (string-append "| Supply: " (number->string
                                                      (economy-supply ECONOMY0))) 16 'black)
@@ -301,7 +302,7 @@
 
 (define (render-economy c im)
   (overlay/align/offset
-   "left" "top"
+   "center" "top"
    (beside
     (text
      (string-append "| Supply: "
@@ -566,7 +567,7 @@
    (currency-economy c)))
 
 (define (fn-generate-nutrient c)
-(...
+  (...
    (currency-jewel c)
    (... (... (...)) (currency-input c))
    (currency-output c)
@@ -607,6 +608,17 @@
 ; Currency -> Currency
 ; consumes a jewel j, returns true if the the number and type of gems
 ; to generate a new fruit has been reached
+
+(check-expect (fruit-threshold? '()) #false)
+
+(check-expect (fruit-threshold? (list SAPHIRE OPAL SAPHIRE OPAL SAPHIRE)) #true)
+
+(check-expect (fruit-threshold? (list RUBY RUBY RUBY)) #true)
+
+(define (fn-fruit-threshold? j)
+  (cond
+    [(empty? j) #false]))
+
 (define (fruit-threshold? j) #false)
 
 ; Currency -> Currency
@@ -674,7 +686,38 @@
 
 ; Currency -> Currency
 ; consumes a currency c, returns a new economy with updated fields
-(define (update-economy c) c)
+
+(check-expect (update-economy CURRENCY0) CURRENCY0)
+
+(check-expect (update-economy
+               (make-currency (list RUBY)
+                              (list INPUT1)
+                              (list MANGO BLOOD) WINTER
+                              ECONOMY0))
+              (make-currency (list RUBY)
+                             (list INPUT1)
+                             (list MANGO BLOOD) WINTER
+                             (make-economy 1 7 2 0)))
+
+(define (fn-update-economy c)
+  (... (currency-jewel c)
+       (currency-input c)
+       (currency-output c)
+       (currency-season c)
+       (... (... (currency-input c))
+            (... (currency-jewel c))
+            (... (currency-output c))
+            ...)))
+    
+(define (update-economy c)
+  (make-currency (currency-jewel c)
+                 (currency-input c)
+                 (currency-output c)
+                 (currency-season c)
+                 (make-economy (length (currency-input c))
+                               (length (currency-jewel c))
+                               (length (currency-output c))
+                               0)))
 
 ; Currency -> Currency
 ; launches the program from some initial state c
