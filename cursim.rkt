@@ -226,8 +226,6 @@
 ; Currency -> Image
 ; consumes a currency c, and draws an image to the screen
 
-(check-expect (render CURRENCY0) MT)
-
 (check-expect
  (render
   (make-currency
@@ -241,7 +239,7 @@
   (place-image
    (create-fruit BLOOD) 0 0
    (overlay/align/offset
-    "left" "top"
+    "middle" "top"
     (beside (text
              (string-append "| Supply: " (number->string
                                           (economy-supply ECONOMY0))) 16 'black)
@@ -615,16 +613,88 @@
 
 (check-expect (fruit-threshold? (list RUBY RUBY RUBY)) #true)
 
-(define (fn-fruit-threshold? j)
-  (cond
-    [(empty? j) #false]))
+;(define (fn-fruit-threshold? j)
+;  (cond
+;    [(empty? j) ...]
+;    [else (if (>= (length j) 
+
 
 (define (fruit-threshold? j) #false)
 
 ; Currency -> Currency
 ; consumes a currency c, generates a new fruit dependent on jewel composition,
 ; adds it to the list and returns output
-(define (generate-fruit c) c)
+
+(check-expect (checked-generate-fruit CURRENCY0)
+              (make-currency
+               '() '() (cons BLOOD (currency-output CURRENCY0)) SPRING ECONOMY0))
+
+(define (checked-generate-fruit c)
+  (make-currency
+   (currency-jewel c)
+   (currency-input c)
+   (cons BLOOD (currency-output c))
+   (currency-season c)
+   (currency-economy c)))
+
+(define (fn-generate-fruit c)
+  (...
+   (currency-jewel c)
+   (currency-input c)
+   (... ... (currency-fruit c))
+   (currency-season c)
+   (currecny-economy c)))
+                          
+(define (generate-fruit c)
+  (make-currency
+   (currency-jewel c)
+   (currency-input c)
+   (cons (random-fruit c 5) (currency-output c))
+   (currency-season c)
+   (currency-economy c)))
+
+; Currency -> Currency
+; consumes a currency c, a number n, and generates a random fruit
+; at a specific position
+(define (random-fruit c n) c)
+
+(define (random-gem c n)
+  (cond
+    [(zero? (random n))
+     (make-gem
+      "Ruby"
+      (cond
+        [else
+         (if (empty? (currency-jewel c))
+             (make-posn SIZE SIZE)
+             (make-posn
+              (+ (posn-x (gem-position (first (currency-jewel c)))) SIZE)
+              (+ (posn-y (gem-position (first (currency-jewel c)))) SIZE)))])
+      1 "")]
+    ))
+
+; Currency Fruit -> Posn
+; conusmes a currency c, a fruit f, and outputs a position depending on
+; the positions of the other elements
+
+(check-expect (create-postion CURRENCY0 BLOOD)
+              (make-currency '() '()
+                             (cons (make-fruit "Blood orange"
+                                               (make-position 0 0) 0 "")
+                                   (currency-output c)) SPRING ECONOMY0))
+
+(check-expect (create-postion
+               (make-currency '() '()
+                                             (make-fruit "Blood orange"
+                                                         (make-position SIZE SIZE)
+                                                         0 "")))
+              (make-currency '() '()
+                             (cons (make-fruit "Blood orange"
+                                               (make-posn 0 0) 0 "")
+                                   (currency-output c)) SPRING ECONOMY0))
+
+(define (create-position c) (make-posn 0 0))
+    
 
 ; Currency -> Boolean
 ; consumes a currency c, checks and updates the season if the umber of inputs
