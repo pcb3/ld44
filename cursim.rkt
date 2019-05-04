@@ -656,44 +656,125 @@
 ; Currency -> Currency
 ; consumes a currency c, a number n, and generates a random fruit
 ; at a specific position
-(define (random-fruit c n) c)
 
-(define (random-gem c n)
+(define (fn-random-fruit c n)
   (cond
     [(zero? (random n))
-     (make-gem
-      "Ruby"
-      (cond
-        [else
-         (if (empty? (currency-jewel c))
-             (make-posn SIZE SIZE)
-             (make-posn
-              (+ (posn-x (gem-position (first (currency-jewel c)))) SIZE)
-              (+ (posn-y (gem-position (first (currency-jewel c)))) SIZE)))])
+     (make-fruit
+      ... ...
+      (create-position c ...)
+      ... ...)]
+    [(equal? (random n) 1)
+     (make-fruit
+      ... ...
+      (create-position c ...)
+      ... ...)]
+    [(equal? (random n) 2)
+     (make-fruit
+      ... ...
+      (create-position c ...)
+      ... ...)]
+    [(equal? (random n) 3)
+     (make-fruit
+      ... ...
+      (create-position c ...)
+      ... ...)]
+    [(equal? (random n) 4)
+     (make-fruit
+      ... ...
+      (create-position c ...)
+      ... ...)]))
+
+(define (random-fruit c n)
+  (cond
+    [(zero? (random n))
+     (make-fruit
+      "Blood orange" TOMATO
+      (create-position c BLOOD)
       1 "")]
-    ))
+    [(equal? (random n) 1)
+     (make-fruit
+      "Lime" AQUAMARINE
+      (create-position c LIME)
+      1 "")]
+    [(equal? (random n) 2)
+     (make-fruit
+      "Peach" VIOLET
+      (create-position c PEACH)
+      1 "")]
+    [(equal? (random n) 3)
+     (make-fruit
+      "Blueberry" CORNFLOWERBLUE
+      (create-position c BERRY)
+      1 "")]
+    [(equal? (random n) 4)
+     (make-fruit
+      "Mango" GOLD
+      (create-position c MANGO)
+      1 "")]))
 
 ; Currency Fruit -> Posn
-; conusmes a currency c, a fruit f, and outputs a position depending on
+; conusmes a currency c and an item, and outputs a position depending on
 ; the positions of the other elements
 
-(check-expect (create-postion CURRENCY0 BLOOD)
+(check-expect (create-position CURRENCY0 BLOOD)
               (make-currency '() '()
-                             (cons (make-fruit "Blood orange"
-                                               (make-position 0 0) 0 "")
-                                   (currency-output c)) SPRING ECONOMY0))
+                             (list BLOOD)
+                             SPRING ECONOMY0))
 
-(check-expect (create-postion
-               (make-currency '() '()
-                                             (make-fruit "Blood orange"
-                                                         (make-position SIZE SIZE)
-                                                         0 "")))
+(check-expect (create-position
+               (make-currency '() '() (list BLOOD)
+                              SPRING ECONOMY0) MANGO)
               (make-currency '() '()
-                             (cons (make-fruit "Blood orange"
-                                               (make-posn 0 0) 0 "")
-                                   (currency-output c)) SPRING ECONOMY0))
+                             (list (make-fruit "Mango" GOLD
+                                               (make-posn SIZE SIZE) 0 "") BLOOD)
+                                 SPRING ECONOMY0))
 
-(define (create-position c) (make-posn 0 0))
+(define (fn-create-position c item)
+  (cond
+    [(gem? item)
+     (cond
+       [else
+        (if (empty? (currency-jewel c))
+            (make-posn ... ...)
+            (make-posn
+             (... (posn-x (gem-position (first (reverse (currency-jewel c)))))
+                  ...)
+             (... (posn-y (gem-position (first (reverse (currency-jewel c)))))
+                  ...)))])]
+    [(fruit? item)
+     (cond
+       [else
+        (if (empty? (currency-output c))
+            (make-posn ... ...)
+            (make-posn
+             (... (posn-x (fruit-position (first (reverse (currency-output c)))))
+                  ...)
+             (... (posn-y (fruit-position (first (reverse (currency-output c)))))
+                  ...)))])]))
+
+(define (create-position c item)
+  (cond
+    [(gem? item)
+     (cond
+       [else
+        (if (empty? (currency-jewel c))
+            (make-posn SIZE SIZE)
+            (make-posn
+             (+ (posn-x (gem-position (first (reverse (currency-jewel c)))))
+                SIZE)
+             (+ (posn-y (gem-position (first (reverse (currency-jewel c)))))
+                SIZE)))])]
+    [(fruit? item)
+     (cond
+       [else
+        (if (empty? (currency-output c))
+            (make-posn SIZE SIZE)
+            (make-posn
+             (+ (posn-x (fruit-position (first (reverse (currency-output c)))))
+                SIZE)
+             (+ (posn-y (fruit-position (first (reverse (currency-output c)))))
+                SIZE)))])]))
     
 
 ; Currency -> Boolean
