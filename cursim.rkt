@@ -332,12 +332,12 @@
   (...
    (cond
      [else (if (... c)
-               (generate-gem c)
+               (currency-jewel (generate-gem c))
                (currency-jewel c))])
-   (generate-nutrient c)
+   (currency-input (generate-nutrient c))
    (cond
      [else (if (... (currency-jewel c))
-               (generate-fruit c)
+               (currency-output (generate-fruit c))
                (currency-output c))])
    (cond (else (if (... c)
                    (set-season c)
@@ -348,12 +348,12 @@
   (make-currency
    (cond
      [else (if (gem-threshold? c)
-               (generate-gem c)
+               (currency-jewel (generate-gem c))
                (currency-jewel c))])
-   (generate-nutrient c)
+   (currency-input (generate-nutrient c))
    (cond
      [else (if (fruit-threshold? (currency-jewel c))
-               (generate-fruit c)
+               (currency-output (generate-fruit c))
                (currency-output c))])
    (cond (else (if (change-season? c)
                    (set-season c)
@@ -632,11 +632,7 @@
 
 (check-expect (fruit-threshold? (list RUBY RUBY RUBY)) #true)
 
-;(define (fn-fruit-threshold? j)
-;  (cond
-;    [(empty? j) ...]
-;    [else (if (>= (length j) 
-
+(define (fn-fruit-threshold? j) j)
 
 (define (fruit-threshold? j) #false)
 
@@ -834,8 +830,8 @@
     [(zero? (modulo (length (currency-input c)) CYCLE-PER-SEASON)) #true]
     [else #false]))
 
-; Currency -> Currency
-; consumes a currency c, outputs new currency with updated season field.
+; Currency -> Season
+; consumes a currency c, updates season
 
 (check-expect (set-season
                (make-currency '() '() '() SPRING ECONOMY0))
@@ -922,8 +918,8 @@
 
 (define (fn-boundary? pos)
   (cond
-    [(> (posn-x (gem-position pos)) (... SCENE-SIZE ...)) ...]
-    [(> (posn-y (gem-position pos)) (... SCENE-SIZE ...)) ...]
+    [(> (posn-x pos) (... SCENE-SIZE ...)) ...]
+    [(> (posn-y pos) (... SCENE-SIZE ...)) ...]
     [else ...]))
 
 (define (boundary? pos)
