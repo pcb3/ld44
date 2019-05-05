@@ -329,21 +329,20 @@
 (define (checked-tock c) c)
 
 (define (fn-tock c)
-  (make-currency
+  (...
    (cond
-     [else (if (gem-threshold? c)
+     [else (if (... c)
                (generate-gem c)
                (currency-jewel c))])
    (generate-nutrient c)
    (cond
-     [else (if (fruit-threshold? (currency-jewel c))
+     [else (if (... (currency-jewel c))
                (generate-fruit c)
                (currency-output c))])
-   (cond
-     (else (if (change-season? c)
-               (set-season c)
-               (currency-season c))))
-   (update-economy c)))
+   (cond (else (if (... c)
+                   (set-season c)
+                   (currency-season c))))
+   (currency-economy (update-economy c))))
 
 (define (tock c)
   (make-currency
@@ -359,7 +358,7 @@
    (cond (else (if (change-season? c)
                    (set-season c)
                    (currency-season c))))
-   (update-economy c)))
+   (currency-economy (update-economy c))))
     
 ; Currency -> Boolean
 ; consumes a currency c, returns true if the required number of
@@ -410,7 +409,7 @@
    (currency-input c)
    (currency-output c)
    (currency-season c)
-   (currecny-economy c)))
+   (currency-economy c)))
                           
 (define (generate-gem c)
   (make-currency
