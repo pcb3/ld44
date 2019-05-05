@@ -747,7 +747,8 @@
                               SPRING ECONOMY0) MANGO)
               (make-currency '() '()
                              (list (make-fruit "Mango" GOLD
-                                               (make-posn SIZE SIZE) 0 "") BLOOD)
+                                               (make-posn 10 (* SIZE 20)) 0 "")
+                                   BLOOD)
                              SPRING ECONOMY0))
 
 (define (fn-create-position c item)
@@ -777,24 +778,36 @@
   (cond
     [(gem? item)
      (cond
-       [else
-        (if (empty? (currency-jewel c))
-            (make-posn SIZE SIZE)
+        [(empty? (currency-jewel c)) (make-posn 10 (* SIZE 2))]
+        [else
+         (if
+          (boundary?
+           (make-posn
+            (+ (posn-x (gem-position (first (currency-jewel c)))) SIZE)
+            (posn-y (gem-position (first (currency-jewel c))))))
+            (make-posn
+             10
+             (+ (posn-y (gem-position (first (currency-jewel c)))) SIZE))
             (make-posn
              (+ (posn-x (gem-position (first (currency-jewel c))))
                 SIZE)
-             (+ (posn-y (gem-position (first (currency-jewel c))))
-                SIZE)))])]
+             (posn-y (gem-position (first (currency-jewel c))))))])]
     [(fruit? item)
      (cond
-       [else
-        (if (empty? (currency-output c))
-            (make-posn SIZE SIZE)
+        [(empty? (currency-output c)) (make-posn 10 (* SIZE 2))]
+        [else
+         (if
+          (boundary?
+           (make-posn
+            (+ (posn-x (fruit-position (first (currency-output c)))) SIZE)
+            (posn-y (fruit-position (first (currency-output c))))))
+            (make-posn
+             10
+             (+ (posn-y (fruit-position (first (currency-output c)))) SIZE))
             (make-posn
              (+ (posn-x (fruit-position (first (currency-output c))))
                 SIZE)
-             (+ (posn-y (fruit-position (first (currency-output c))))
-                SIZE)))])]))
+             (posn-y (fruit-position (first (currency-output c))))))])]))
     
 
 ; Currency -> Boolean
@@ -890,41 +903,34 @@
                                (length (currency-output c))
                                0)))
 
-; Gem -> Boolean
-; consumes a gem, and returns true if gem's position exceeds
+; Posn -> Boolean
+; consumes a positon, and returns true if the position exceeds
 ; the screen boundary
 
-(check-expect (boundary? (make-gem TOMATO (make-posn 10 40) 0 "")) #false)
+(check-expect (boundary? (make-posn 10 40)) #false)
 
-(check-expect (boundary? (make-gem TOMATO (make-posn 390 40) 0 "")) #false)
+(check-expect (boundary? (make-posn 390 40)) #false)
 
-(check-expect (boundary? (make-gem TOMATO (make-posn 10 390) 0 "")) #false)
+(check-expect (boundary? (make-posn 10 390)) #false)
 
-(check-expect (boundary? (make-gem TOMATO (make-posn 390 390) 0 "")) #false)
+(check-expect (boundary? (make-posn 390 390)) #false)
 
-(check-expect (boundary? (make-gem TOMATO (make-posn 10 30) 0 "")) #true)
+(check-expect (boundary? (make-posn 400 40)) #true)
 
-(check-expect (boundary? (make-gem TOMATO (make-posn 400 40) 0 "")) #true)
+(check-expect (boundary? (make-posn 10 395)) #true)
 
-(check-expect (boundary? (make-gem TOMATO (make-posn 10 395) 0 "")) #true)
+(check-expect (boundary? (make-posn 391 391)) #true)
 
-(check-expect (boundary? (make-gem TOMATO (make-posn 391 391) 0 "")) #true)
-
-(define (fn-boundary? gem)
+(define (fn-boundary? pos)
   (cond
-    [(< (posn-x (gem-position gem)) ...) ...]
-    [(> (posn-x (gem-position gem)) (... SCENE-SIZE ...)) ...]
-    [(< (posn-y (gem-position gem)) ...) ...]
-    [(> (posn-y (gem-position gem)) (... SCENE-SIZE ...)) ...]
+    [(> (posn-x (gem-position pos)) (... SCENE-SIZE ...)) ...]
+    [(> (posn-y (gem-position pos)) (... SCENE-SIZE ...)) ...]
     [else ...]))
 
-
-(define (boundary? gem)
+(define (boundary? pos)
   (cond
-    [(< (posn-x (gem-position gem)) 10) #true]
-    [(> (posn-x (gem-position gem)) (- SCENE-SIZE 10)) #true]
-    [(< (posn-y (gem-position gem)) 40) #true]
-    [(> (posn-y (gem-position gem)) (- SCENE-SIZE 10)) #true]
+    [(> (posn-x pos) (- SCENE-SIZE 10)) #true]
+    [(> (posn-y pos) (- SCENE-SIZE 10)) #true]
     [else #false]))
 
 ; Currency -> Currency
