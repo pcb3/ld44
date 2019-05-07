@@ -126,7 +126,7 @@
                      CA CU N2 O2 H20 LIGHT TEMPERATURE
                      CA CU N2 O2 H20 LIGHT TEMPERATURE
                      CA CU N2 O2 H20 LIGHT TEMPERATURE
-                     CA CU N2 O2 H20 LIGHT TEMPERATURE))
+                     CA))
 
 ; an output is one of:
 ; - '()
@@ -317,17 +317,6 @@
 ; Currency -> Currency
 ; consumes a currency c and updates it each tick
 
-(check-expect (checked-tock CURRENCY0) CURRENCY0)
-
-(check-expect (checked-tock
-               (make-currency (list RUBY) '() (list BLOOD) WINTER ECONOMY0))
-              (make-currency (list RUBY)
-                             (list O2)
-                             (list BLOOD)
-                             WINTER ECONOMY0))
-
-(define (checked-tock c) c)
-
 (define (fn-tock c)
   (...
    (cond
@@ -494,8 +483,8 @@
 ; consumes a currency c, randomly generates a nutrient, adds it to the list,
 ; and returns input
 
-(check-expect (generate-nutrient CURRENCY0)
-              (make-currency '() (list O2) '() WINTER ECONOMY0))
+(check-expect (checked-generate-nutrient CURRENCY0)
+              (make-currency '() (list O2) '() SPRING ECONOMY0))
 
 (define (checked-generate-nutrient c)
   (make-currency
@@ -666,18 +655,12 @@
 ; the positions of the other elements
 
 (check-expect (create-position CURRENCY0 BLOOD)
-              (make-currency '() '()
-                             (list BLOOD)
-                             SPRING ECONOMY0))
+              (make-posn 10 40))
 
 (check-expect (create-position
                (make-currency '() '() (list BLOOD)
                               SPRING ECONOMY0) MANGO)
-              (make-currency '() '()
-                             (list (make-fruit "Mango" GOLD
-                                               (make-posn 10 (* SIZE 20)) 0 "")
-                                   BLOOD)
-                             SPRING ECONOMY0))
+              (make-posn 20 0))
 
 (define (fn-create-position c item)
   (cond
@@ -743,8 +726,9 @@
 ; (cycles) has been reached
 
 (check-expect (change-season?
-               (make-currency (list O2 O2 O2 O2 O2 O2 O2 O2 O2 O2)
-                              '() '() WINTER ECONOMY0))
+               (make-currency '()
+                              (list O2 O2 O2 O2 O2 O2 O2 O2 O2 O2)
+                              '() WINTER ECONOMY0))
               #true)
 
 (check-expect (change-season?
@@ -754,13 +738,15 @@
 (define (fn-change-season? c)
   (cond
     [(empty? (currency-season c)) ...]
-    [(zero? (modulo (length (currency-input c)) ...)) ...]
+    [(and (zero? (modulo (length (currency-input c)) ...))
+          (not (zero? (length (currency-input c))))) ...]
     [else ...]))
 
 (define (change-season? c)
   (cond
     [(empty? (currency-season c)) #false]
-    [(zero? (modulo (length (currency-input c)) CYCLE-PER-SEASON)) #true]
+    [(and (zero? (modulo (length (currency-input c)) CYCLE-PER-SEASON))
+          (not (zero? (length (currency-input c))))) #true]
     [else #false]))
 
 ; Currency -> Season
@@ -809,7 +795,7 @@
               (make-currency (list RUBY)
                              (list INPUT1)
                              (list MANGO BLOOD) WINTER
-                             (make-economy 1 7 2 0)))
+                             (make-economy 1 1 2 0)))
 
 (define (fn-update-economy c)
   (... (currency-jewel c)
