@@ -49,11 +49,11 @@
 ; a gem is a unit of currency. Inputs are exchanged into
 ; gems that when combined are exchanged again into outputs
 
-(define RUBY (make-gem TOMATO (make-posn SIZE SIZE) 1 ""))
-(define TURQUOISE (make-gem AQUAMARINE (make-posn (* 2 SIZE) (* 2 SIZE)) 1 ""))
-(define QUARTZ (make-gem VIOLET (make-posn (* 3 SIZE) (* 3 SIZE)) 1 ""))
-(define SAPHIRE (make-gem CORNFLOWERBLUE (make-posn (* 4 SIZE) (* 4 SIZE)) 1 ""))
-(define OPAL (make-gem GOLD (make-posn (* 5 SIZE) (* 5 SIZE)) 1 ""))
+(define RUBY (make-gem TOMATO (make-posn 0 0) 1 ""))
+(define TURQUOISE (make-gem AQUAMARINE (make-posn 0 0) 1 ""))
+(define QUARTZ (make-gem VIOLET (make-posn 0 0) 1 ""))
+(define SAPHIRE (make-gem CORNFLOWERBLUE (make-posn 0 0) 1 ""))
+(define OPAL (make-gem GOLD (make-posn 0 0) 1 ""))
 
 ; a Nutrient is a structure
 ; (make-nutrient String String Number String)
@@ -160,7 +160,7 @@
 
 (check-expect (render-jewel
                (make-currency (list RUBY) '() '() '() '()) MT)
-              (place-image (create-gem RUBY) 20 20 MT))
+              (place-image (create-gem RUBY) 0 0 MT))
 
 (define (fn-render-jewel c im)
   (cond
@@ -235,7 +235,7 @@
    WINTER ECONOMY0))
  (place-image
   (create-gem RUBY)
-  20 20
+  0 0
   (place-image
    (create-fruit BLOOD) 0 0
    (overlay/align/offset
@@ -374,15 +374,17 @@
 
 (define (fn-gem-threshold? c)
   (cond
-    [else (if (... (... (length (currency-input c))
+    [else (if (... (... (... (... (currency-input c))
                         (season-delta (currency-season c))) ...)
+                   (... (... (... (currency-input c)))))
               ...
               ...)]))
 
 (define (gem-threshold? c)
   (cond
-    [else (if (>= (* (length (currency-input c))
-                     (season-delta (currency-season c))) GEM-THRESHOLD)
+    [else (if (and (zero? (modulo (* (length (currency-input c))
+                     (season-delta (currency-season c))) GEM-THRESHOLD))
+                   (not (zero? (length (currency-input c)))))
               #true
               #false)]))
 
@@ -437,67 +439,27 @@
     [(zero? (random n))
      (make-gem
       ...
-      (cond
-        [else
-         (if (empty? (currency-jewel c))
-             (make-posn ... ...)
-             (make-posn
-              (... (posn-x (gem-position (first (currency-jewel c))))
-                   ...)
-              (... (posn-y (gem-position (first (currency-jewel c))))
-                   ...)))])
+      (create-position c ...)
       ... "")]
     [(equal? (random n) ...)
      (make-gem
       ...
-      (cond
-        [else
-         (if (empty? (currency-jewel c))
-             (make-posn ... ...)
-             (make-posn
-              (... (posn-x (gem-position (first (currency-jewel c))))
-                   ...)
-              (... (posn-y (gem-position (first (currency-jewel c))))
-                   ...)))])
+      (create-position c ...)
       ... "")]
     [(equal? (random n) ...)
      (make-gem
       ...
-      (cond
-        [else
-         (if (empty? (currency-jewel c))
-             (make-posn ... ...)
-             (make-posn
-              (... (posn-x (gem-position (first (currency-jewel c))))
-                   ...)
-              (... (posn-y (gem-position (first (currency-jewel c))))
-                   ...)))])
+      (create-position c ...)
       ... "")]
     [(equal? (random n) ...)
      (make-gem
       ...
-      (cond
-        [else
-         (if (empty? (currency-jewel c))
-             (make-posn ... ...)
-             (make-posn
-              (... (posn-x (gem-position (first (currency-jewel c))))
-                   ...)
-              (... (posn-y (gem-position (first (currency-jewel c))))
-                   ...)))])
+      (create-position c ...)
       ... "")]
     [else
      (make-gem
       ...
-      (cond
-        [else
-         (if (empty? (currency-jewel c))
-             (make-posn ... ...)
-             (make-posn
-              (... (posn-x (gem-position (first (currency-jewel c))))
-                   ...)
-              (... (posn-y (gem-position (first (currency-jewel c))))
-                   ...)))])
+      (create-position c ...)
       ... "")]))
     
 (define (random-gem c n)
@@ -505,67 +467,27 @@
     [(zero? (random n))
      (make-gem
       "Ruby"
-      (cond
-        [else
-         (if (empty? (currency-jewel c))
-             (make-posn SIZE SIZE)
-             (make-posn
-              (+ (posn-x (gem-position (first (currency-jewel c))))
-                 SIZE)
-              (+ (posn-y (gem-position (first (currency-jewel c))))
-                 SIZE)))])
+      (create-position c RUBY)
       1 "")]
     [(equal? (random n) 1)
      (make-gem
       "Turquoise"
-      (cond
-        [else
-         (if (empty? (currency-jewel c))
-             (make-posn SIZE SIZE)
-             (make-posn
-              (+ (posn-x (gem-position (first (currency-jewel c))))
-                 SIZE)
-              (+ (posn-y (gem-position (first (currency-jewel c))))
-                 SIZE)))])
+      (create-position c TURQUOISE)
       1 "")]
     [(equal? (random n) 2)
      (make-gem
       "Quartz"
-      (cond
-        [else
-         (if (empty? (currency-jewel c))
-             (make-posn SIZE SIZE)
-             (make-posn
-              (+ (posn-x (gem-position (first (currency-jewel c))))
-                 SIZE)
-              (+ (posn-y (gem-position (first (currency-jewel c))))
-                 SIZE)))])
+      (create-position c QUARTZ)
       1 "")]
     [(equal? (random n) 3)
      (make-gem
       "Saphire"
-      (cond
-        [else
-         (if (empty? (currency-jewel c))
-             (make-posn SIZE SIZE)
-             (make-posn
-              (+ (posn-x (gem-position (first (currency-jewel c))))
-                 SIZE)
-              (+ (posn-y (gem-position (first (currency-jewel c))))
-                 SIZE)))])
+      (create-position c SAPHIRE)
       1 "")]
     [else
      (make-gem
       "Opal"
-      (cond
-        [else
-         (if (empty? (currency-jewel c))
-             (make-posn SIZE SIZE)
-             (make-posn
-              (+ (posn-x (gem-position (first (currency-jewel c))))
-                 SIZE)
-              (+ (posn-y (gem-position (first (currency-jewel c))))
-                 SIZE)))])
+      (create-position c OPAL)
       1 "")]))
 
 ; Currency -> Currency
