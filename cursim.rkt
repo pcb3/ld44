@@ -455,27 +455,27 @@
   (cond
     [(zero? (random n))
      (make-gem
-      "Ruby"
+      TOMATO
       (create-position c RUBY)
       1 "")]
     [(equal? (random n) 1)
      (make-gem
-      "Turquoise"
+      AQUAMARINE
       (create-position c TURQUOISE)
       1 "")]
     [(equal? (random n) 2)
      (make-gem
-      "Quartz"
+      VIOLET
       (create-position c QUARTZ)
       1 "")]
     [(equal? (random n) 3)
      (make-gem
-      "Saphire"
+      AQUAMARINE
       (create-position c SAPHIRE)
       1 "")]
     [else
      (make-gem
-      "Opal"
+      GOLD
       (create-position c OPAL)
       1 "")]))
 
