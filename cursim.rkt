@@ -23,7 +23,7 @@
 (define GOLD "gold")
 (define CYCLE-PER-SEASON 10)
 (define GEM-THRESHOLD 100)
-(define FRUIT-THRESHOLD 100)
+(define FRUIT-THRESHOLD 10)
 
 ; graphical constants
 (define (create-gem g) (rhombus GEM-SIZE ANGLE "solid" (gem-colour g)))
@@ -486,7 +486,7 @@
               (... (posn-y (gem-position (first (currency-jewel c))))
                    ...)))])
       ... "")]
-    [(equal? (random n) ...)
+    [else
      (make-gem
       ...
       (cond
@@ -554,7 +554,7 @@
               (+ (posn-y (gem-position (first (currency-jewel c))))
                  SIZE)))])
       1 "")]
-    [(equal? (random n) 4)
+    [else
      (make-gem
       "Opal"
       (cond
@@ -622,19 +622,30 @@
         [(equal? n 5) LIGHT]
         [(equal? n 6) TEMPERATURE]))
 
-; Currency -> Currency
+; Jewel -> Boolean
 ; consumes a jewel j, returns true if the the number and type of gems
 ; to generate a new fruit has been reached
 
 (check-expect (fruit-threshold? '()) #false)
 
-(check-expect (fruit-threshold? (list SAPHIRE OPAL SAPHIRE OPAL SAPHIRE)) #true)
+(check-expect (fruit-threshold? (list RUBY RUBY RUBY)) #false)
 
-(check-expect (fruit-threshold? (list RUBY RUBY RUBY)) #true)
+(check-expect (fruit-threshold? (list SAPHIRE OPAL SAPHIRE OPAL SAPHIRE
+                                      SAPHIRE OPAL SAPHIRE OPAL SAPHIRE)) #true)
 
-(define (fn-fruit-threshold? j) j)
+(define (fn-fruit-threshold? j)
+  (cond
+    [else (if (and (zero? (modulo (length j) ...))
+                   (not (zero? (length j))))
+              ...
+              ...)]))
 
-(define (fruit-threshold? j) #false)
+(define (fruit-threshold? j)
+  (cond
+    [else (if (and (zero? (modulo (length j) FRUIT-THRESHOLD))
+                   (not (zero? (length j))))
+          #true
+          #false)]))
 
 ; Currency -> Currency
 ; consumes a currency c, generates a new fruit dependent on jewel composition,
@@ -694,7 +705,7 @@
       ... ...
       (create-position c ...)
       ... ...)]
-    [(equal? (random n) 4)
+    [else
      (make-fruit
       ... ...
       (create-position c ...)
@@ -722,7 +733,7 @@
       "Blueberry" CORNFLOWERBLUE
       (create-position c BERRY)
       1 "")]
-    [(equal? (random n) 4)
+    [else
      (make-fruit
       "Mango" GOLD
       (create-position c MANGO)
