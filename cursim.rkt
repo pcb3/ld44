@@ -22,7 +22,7 @@
 (define CORNFLOWERBLUE "Cornflowerblue")
 (define GOLD "gold")
 (define CYCLE-PER-SEASON 10)
-(define GEM-THRESHOLD 100)
+(define GEM-THRESHOLD 10)
 (define FRUIT-THRESHOLD 10)
 
 ; graphical constants
@@ -356,7 +356,10 @@
 (check-expect (gem-threshold? CURRENCY0) #false)
 
 (check-expect (gem-threshold?
-               (make-currency '() INPUT2 '() WINTER ECONOMY0)) #false)
+               (make-currency '() (list RUBY SAPHIRE) '() WINTER ECONOMY0)) #false)
+
+(check-expect (gem-threshold?
+               (make-currency '() INPUT2 '() WINTER ECONOMY0)) #true)
 
 (check-expect (gem-threshold?
                (make-currency '() INPUT2 '() AUTUMN ECONOMY0)) #true) 
@@ -364,7 +367,7 @@
 (define (fn-gem-threshold? c)
   (cond
     [else (if (... (... (... (... (currency-input c))
-                        (season-delta (currency-season c))) ...)
+                             (season-delta (currency-season c))) ...)
                    (... (... (... (currency-input c)))))
               ...
               ...)]))
@@ -372,7 +375,7 @@
 (define (gem-threshold? c)
   (cond
     [else (if (and (zero? (modulo (* (length (currency-input c))
-                     (season-delta (currency-season c))) GEM-THRESHOLD))
+                                     (season-delta (currency-season c))) GEM-THRESHOLD))
                    (not (zero? (length (currency-input c)))))
               #true
               #false)]))
@@ -470,7 +473,7 @@
       1 "")]
     [(equal? (random n) 3)
      (make-gem
-      AQUAMARINE
+      CORNFLOWERBLUE
       (create-position c SAPHIRE)
       1 "")]
     [else
@@ -555,8 +558,8 @@
   (cond
     [else (if (and (zero? (modulo (length j) FRUIT-THRESHOLD))
                    (not (zero? (length j))))
-          #true
-          #false)]))
+              #true
+              #false)]))
 
 ; Currency -> Currency
 ; consumes a currency c, generates a new fruit dependent on jewel composition,
@@ -689,36 +692,36 @@
   (cond
     [(gem? item)
      (cond
-        [(empty? (currency-jewel c)) (make-posn 10 (* SIZE 2))]
-        [else
-         (if
-          (boundary?
-           (make-posn
-            (+ (posn-x (gem-position (first (currency-jewel c)))) SIZE)
-            (posn-y (gem-position (first (currency-jewel c))))))
-            (make-posn
-             10
-             (+ (posn-y (gem-position (first (currency-jewel c)))) SIZE))
-            (make-posn
-             (+ (posn-x (gem-position (first (currency-jewel c))))
-                SIZE)
-             (posn-y (gem-position (first (currency-jewel c))))))])]
+       [(empty? (currency-jewel c)) (make-posn 10 (* SIZE 2))]
+       [else
+        (if
+         (boundary?
+          (make-posn
+           (+ (posn-x (gem-position (first (currency-jewel c)))) SIZE)
+           (posn-y (gem-position (first (currency-jewel c))))))
+         (make-posn
+          10
+          (+ (posn-y (gem-position (first (currency-jewel c)))) SIZE))
+         (make-posn
+          (+ (posn-x (gem-position (first (currency-jewel c))))
+             SIZE)
+          (posn-y (gem-position (first (currency-jewel c))))))])]
     [(fruit? item)
      (cond
-        [(empty? (currency-output c)) (make-posn 10 (* SIZE 2))]
-        [else
-         (if
-          (boundary?
-           (make-posn
-            (+ (posn-x (fruit-position (first (currency-output c)))) SIZE)
-            (posn-y (fruit-position (first (currency-output c))))))
-            (make-posn
-             10
-             (+ (posn-y (fruit-position (first (currency-output c)))) SIZE))
-            (make-posn
-             (+ (posn-x (fruit-position (first (currency-output c))))
-                SIZE)
-             (posn-y (fruit-position (first (currency-output c))))))])]))
+       [(empty? (currency-output c)) (make-posn 10 (* SIZE 2))]
+       [else
+        (if
+         (boundary?
+          (make-posn
+           (+ (posn-x (fruit-position (first (currency-output c)))) SIZE)
+           (posn-y (fruit-position (first (currency-output c))))))
+         (make-posn
+          10
+          (+ (posn-y (fruit-position (first (currency-output c)))) SIZE))
+         (make-posn
+          (+ (posn-x (fruit-position (first (currency-output c))))
+             SIZE)
+          (posn-y (fruit-position (first (currency-output c))))))])]))
     
 
 ; Currency -> Boolean
@@ -831,22 +834,66 @@
 
 (check-expect (boundary? (make-posn 400 40)) #true)
 
-(check-expect (boundary? (make-posn 10 395)) #true)
+(check-expect (boundary? (make-posn 10 395)) #false)
 
 (check-expect (boundary? (make-posn 391 391)) #true)
 
 (define (fn-boundary? pos)
   (cond
     [(> (posn-x pos) (... SCENE-SIZE ...)) ...]
-    [(> (posn-y pos) (... SCENE-SIZE ...)) ...]
     [else ...]))
 
 (define (boundary? pos)
   (cond
     [(> (posn-x pos) (- SCENE-SIZE 10)) #true]
-    [(> (posn-y pos) (- SCENE-SIZE 10)) #true]
     [else #false]))
 
+; Currency -> Boolean
+; consumes a currency c,  and returns true if required number of inputs has
+; been reached
+
+; Currency -> Boolean
+; consumes a currency c, and outputs true if the last world condition
+; has been met
+
+(check-expect (last-world? CURRENCY0) #false)
+
+(check-expect (last-world? (make-currency
+                            (list (make-gem TOMATO (make-posn 0 400) 1 ""))
+                            '() (list MANGO) SPRING ECONOMY0))
+              #true)
+
+(check-expect (last-world? (make-currency
+                            (list RUBY) '()
+                            (list
+                             (make-fruit "Mango" "gold" (make-posn 0 400) 1 ""))
+                            SPRING ECONOMY0))
+              #true)
+
+(define (fn-last-world? c)
+  (cond
+    [(or (empty? (currency-jewel c))
+         (empty? (currency-output c)))
+     #false]
+    [else (if (... (... (posn-y (gem-position (first (currency-jewel c))))
+                        (... SCENE-SIZE ...))
+                   (... (posn-y (fruit-position (first (currency-output c))))
+                        (... SCENE-SIZE ...)))
+              ...
+              ...)]))
+
+(define (last-world? c)
+  (cond
+    [(or (empty? (currency-jewel c))
+         (empty? (currency-output c)))
+     #false]
+    [else (if (or (> (posn-y (gem-position (first (currency-jewel c))))
+                     (- SCENE-SIZE 10))
+                  (> (posn-y (fruit-position (first (currency-output c))))
+                     (- SCENE-SIZE 10)))
+              #true
+              #false)]))
+         
 ; Currency -> Currency
 ; launches the program from some initial state c
 
@@ -862,4 +909,4 @@
     ))
 
 ; usage
-;(cursim 1)
+;(cursim 0.1)
