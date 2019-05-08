@@ -32,6 +32,7 @@
   (scene+line
    (scene+line MT 0 (* SCENE-SIZE 0.75) SCENE-SIZE (* SCENE-SIZE 0.75) 'black)
    0 (* SCENE-SIZE 0.25) SCENE-SIZE (* SCENE-SIZE 0.25) 'black))
+(define GO-MSG (text "GAME OVER" 24 "black"))
 
 ; structures
 (define-struct currency [jewel input output season economy]) 
@@ -893,7 +894,19 @@
                      (- SCENE-SIZE 10)))
               #true
               #false)]))
-         
+
+; Currency -> Image
+; consumes a currency c, and draws the final world to the screen
+
+(check-expect (last-picture CURRENCY0)
+              (place-image GO-MSG (/ SCENE-SIZE 2) (/ SCENE-SIZE 2) MT))
+
+(define (fn-last-picture c)
+  (... GO-MSG (... SCENE-SIZE ...) (... SCENE-SIZE ...) ...))
+
+(define (last-picture c)
+  (place-image GO-MSG (/ SCENE-SIZE 2) (/ SCENE-SIZE 2) MT))
+
 ; Currency -> Currency
 ; launches the program from some initial state c
 
