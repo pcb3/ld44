@@ -3,6 +3,7 @@
 #reader(lib "htdp-beginner-abbr-reader.ss" "lang")((modname cursim) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
 ; pcb3 https://github.com/pcb3/ld44
 ; Cursim: a simulator of exchange
+; Ludum Dare 44 entry
 
 (require 2htdp/image)
 (require 2htdp/universe)
@@ -261,11 +262,6 @@
   (render-jewel c
                 (render-output c
                                (render-economy c MT))))
-
-; Currency MouseEvent -> Currency
-; consumes a currency c, a mouse event me, and outputs a new currency
-
-(define (click c me) c)
 
 ; Currency -> Image
 ; consumes a currency c, and draws the economy info bar to the screen
@@ -654,7 +650,7 @@
       (create-position c MANGO)
       1 "")]))
 
-; Currency Fruit -> Posn
+; Currency Fruit/Gem -> Posn
 ; conusmes a currency c and an item, and outputs a position depending on
 ; the positions of the other elements
 
@@ -724,7 +720,6 @@
              SIZE)
           (posn-y (fruit-position (first (currency-output c))))))])]))
     
-
 ; Currency -> Boolean
 ; consumes a currency c, checks and updates the season if the umber of inputs
 ; (cycles) has been reached
@@ -850,10 +845,6 @@
     [else #false]))
 
 ; Currency -> Boolean
-; consumes a currency c,  and returns true if required number of inputs has
-; been reached
-
-; Currency -> Boolean
 ; consumes a currency c, and outputs true if the last world condition
 ; has been met
 
@@ -914,12 +905,11 @@
   (big-bang CURRENCY0
     [on-tick tock rate]
     [to-draw render]
-    ;    [on-mouse click]
-    ;    [stop-when last-world-? last-picture]
+    [stop-when last-world? last-picture]
     [state #t]
-    ;    [close-on-stop 3]
+    [close-on-stop 3]
     [name "Cursim"]
     ))
 
 ; usage
-;(cursim 0.1)
+(cursim 0.1)
